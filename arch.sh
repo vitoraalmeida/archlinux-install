@@ -47,13 +47,13 @@ mount /dev/sda1 /mnt/boot
 mkdir -p /mnt/home
 mount /dev/sda4 /mnt/home
 
-pacman -Sy --noconfirm archlinux-keyring
-
 pacstrap /mnt base base-devel linux linux-firmware
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt && echo "root:$pass" | chpasswd
+
+echo "archlinux" >> /etc/hostname
 
 ln -sf /usr/share/zoneinfo/America/Bahia /etc/localtime
 
@@ -63,6 +63,8 @@ echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 
 locale-gen
+
+echo "KEYMAP=br-abnt2" >> /etc/vconsole.conf
 
 pacman --noconfirm --needed -S networkmanager
 systemctl enable NetworkManager
