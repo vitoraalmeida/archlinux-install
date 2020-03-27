@@ -1,0 +1,133 @@
+pacman -S openssh
+
+verificar se /etc/ssh/sshd_config consta root login
+
+systemctl start sshd
+
+VBoxManage modifyvm myserver --natpf1 "ssh,tcp,,3022,,22"
+
+ssh -p 3022 user@127.0.0.1
+
+====Set keyboard layout
+
+== Listar layouts disponíveis
+$ ls /usr/share/kbd/keymaps/**/*.map.gz
+
+== Modificar layout
+$ loadkeys br-abnt2
+
+==== Verificar mode de boot (BIOS ou UEFI)
+$ ls /sys/firmware/efi/efivars
+
+** se nada aparecer, o modo de boot do sistema é BIOS
+
+==== Conectar à internet
+$ ip link       ** Lista as interfaces de rede habilitadas
+			en = ethernet (cabo)
+			wl = wireless
+# Para conectar com cabo, é só plugar.
+
+$ ping archlinux.org    ** verifica se está funcionando
+
+==== Atualizar relogio do sistema
+
+$ timedatectl set-ntp true
+$ timedatectl status   **verifica o horario
+
+==== Criar partições
+
+$ fdisk -l
+$ fdisk /dev/sda
+
+d - deleta partições
+o - cria tabela de partições DOS
+g - cria tabela de partições GPT
+p - imprime tabela de partições
+n - cria nova partição
+w - escreve mudanças
+t - muda o tipo de uma partição
+l - lista os tipos de partições
+
+
+==== Formatar particoes
+
+$ yes | mkfs.ext4 /dev/sda1
+$ yes | mkfs.ext4 /dev/sda3
+$ yes | mkfs.ext4 /dev/sda4
+$ mkswap /dev/sda2
+
+== Para EFI
+
+$ mkfs.fat -F32 /dev/sda1
+
+==== Montar os sistemas de arquivo
+
+$ swapon /dev/sda2
+$ mount /dev/sda3 /mnt
+$ mkdir -p /mnt/boot
+$ mount /dev/sda1 /mnt/boot
+$ mkdir -p /mnt/home
+$ mount /dev/sda4 /mnt/home
+
+==== Montar apra EFI
+$ mkdir -p mnt/boot/efi
+$ mount /dev/sda1 /mnt/boot/efi
+
+==== Escolhe melhores mirrors
+
+$ pacman -Syy    ** sincroniza os repositórios
+$ pacman -S reflector
+$ cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak ** faz backup
+$ reflector -c "BR" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
+
+==== Instala sistema base
+
+pacstrap /mnt base base-devel linux linux-firmware vim
+
+==== gera tabela de partições 
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+
+==== entra no sistema gerado para modficar
+
+arch-chroot /mnt
+
+==== Define timezone
+
+$ ls /usr/share/zoneinfo/    **lista os zoneinfos disponiveis
+$ ln -sf /usr/share/zoneinfo/America/Bahia /etc/localtime **define o zone
+$ hwclock --systohc   ** sincroniza o relogio com o relogio da placa mae
+
+==== Define linguagem do sistema
+
+$ echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+$ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+$ echo "en_US ISO-8859-1" >> /etc/locale.gen
+
+$ locale-gen   ** gera os locales/linguagem do sistema
+
+==== Define layout do teclado
+
+$ echo "KEYMAP=br-abnt2" >> /etc/vconsole.conf
+
+==== Instala network manager
+
+$ pacman --noconfirm --needed -S networkmanager
+$ systemctl enable NetworkManager
+$ systemctl start NetworkManager
+
+==== Instala grub 
+
+$ pacman --noconfirm --needed -S grub && grub-install --target=i386-pc /dev/sda && grub-mkconfig -o /boot/grub/grub.cfg
+
+==== grub em UEFI
+
+pacman -S grub efibootmgr
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efigrub-mkconfig -o /boot/grub/grub.cfg
+
+==== instala dialog
+
+pacman --noconfirm --needed -S dialog **serve para janelas em scripts
+
+====
