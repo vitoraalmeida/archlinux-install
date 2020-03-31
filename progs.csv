@@ -3,6 +3,13 @@
 ,xorg-server,"is the graphical server."
 ,xorg-xwininfo,"allows querying information about windows."
 ,xorg-xinit,"starts the graphical server."
+,xf86-input-libinput, "touchpad"
+,mesa,
+,xf86-video-intel,
+,lib32-intel-dri,
+,lib32-mesa,
+,lib32-libgl,
+,xf86-video-amdgpu,
 ,ttf-liberation,
 ,ttf-inconsolata,"is the monospace font of LARBS."
 ,ttf-linux-libertine,"provides the sans and serif fonts for LARBS."
@@ -27,7 +34,6 @@ A,gtk-theme-arc-gruvbox-git,"gives the dark GTK theme used in LARBS."
 ,mpc,"is a terminal interface for mpd."
 ,mpv,"is the patrician's choice video player."
 ,ncmpcpp,"a ncurses interface for music with multiple formats and a powerful tag editor."
-,newsboat,"is a terminal RSS client."
 A,brave-bin,"is an elegant browser with built-in adblocking, tor and other features."
 ,noto-fonts-emoji,"is an emoji font."
 V,font-symbola,"provides unicode and emoji symbols."
